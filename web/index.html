@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeSettle - 自嗨转盘 & 灵感生活指南</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cosmicDark: '#0B0F19',
+                        cosmicSurface: '#151D30',
+                        primaryTeal: '#06B6D4',
+                        primaryTealHover: '#0891B2',
+                        indoorCalm: '#EC4899',       // 灵感漫游
+                        indoorActive: '#06B6D4',     // 居室整活
+                        outdoorCalm: '#10B981',      // 城市漂流
+                        outdoorActive: '#F59E0B'      // 肉身出逃
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts for premium Space typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons via CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #050811;
+        }
+        .jetbrains {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primaryTeal to-indoorCalm p-0.5 flex items-center justify-center shadow-lg shadow-teal-500/10">
+                    <div class="w-full h-full bg-cosmicDark rounded-[10px] flex items-center justify-center">
+                        <i data-lucide="compass" class="w-5 h-5 text-primaryTeal animate-pulse"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-teal-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                        VibeSettle <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 ml-1">Web Edition</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-400">Decide your next perfect vibration when you are free</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 text-xs text-slate-400 jetbrains bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>Ready</span>
+                </div>
+                <button onclick="resetToDefaultSeeds()" class="text-xs text-slate-400 hover:text-white transition flex items-center space-x-1 hover:bg-slate-800 px-2.5 py-1.5 rounded-lg">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>重置内置数据</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Panel: Filters & Multi-Selection Admin -->
+        <section class="lg:col-span-3 flex flex-col space-y-6">
+            
+            <!-- Bento Stats Panel -->
+            <div class="bg-cosmicSurface/40 border border-slate-800/80 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
+                <h2 class="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-4 flex items-center justify-between">
+                    <span>状态看板</span>
+                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-slate-400"></i>
+                </h2>
+                <div class="grid grid-cols-2 gap-3 jetbrains">
+                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/50">
+                        <span class="text-[10px] text-slate-400 block mb-1">已装载项目</span>
+                        <span id="active-count" class="text-2xl font-bold text-slate-100">0</span>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/50">
+                        <span class="text-[10px] text-slate-400 block mb-1">心动收藏</span>
+                        <span id="favs-count" class="text-2xl font-bold text-teal-400">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Filter Cards with Multi-Select Checks -->
+            <div class="bg-cosmicSurface/40 border border-slate-800/80 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xs font-semibold text-slate-400 tracking-wider uppercase flex items-center space-x-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-primaryTeal"></i>
+                        <span>分类筛选 (允许多选)</span>
+                    </h2>
+                </div>
+                
+                <div class="space-y-2.5">
+                    <!-- ALL toggle -->
+                    <button onclick="toggleCategory('全部')" id="chip-全部" class="w-full flex items-center justify-between p-3 rounded-xl border transition text-sm font-medium bg-slate-900 border-slate-800 hover:border-slate-700">
+                        <span class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                            <span>全部激活</span>
+                        </span>
+                        <i data-lucide="check" class="w-4 h-4 opacity-0 transition"></i>
+                    </button>
+
+                    <!-- Pink / 灵感漫游 -->
+                    <button onclick="toggleCategory('灵感漫游')" id="chip-灵感漫游" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 transition text-sm font-medium">
+                        <span class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indoorCalm shadow-[0_0_8dp_#EC4899]"></span>
+                            <span>灵感漫游</span>
+                        </span>
+                        <i data-lucide="check" class="w-4 h-4 check-icon opacity-0 text-indoorCalm transition"></i>
+                    </button>
+
+                    <!-- Cyan / 居室整活 -->
+                    <button onclick="toggleCategory('居室整活')" id="chip-居室整活" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 transition text-sm font-medium">
+                        <span class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indoorActive shadow-[0_0_8dp_#06B6D4]"></span>
+                            <span>居室整活</span>
+                        </span>
+                        <i data-lucide="check" class="w-4 h-4 check-icon opacity-0 text-indoorActive transition"></i>
+                    </button>
+
+                    <!-- Emerald / 城市漂流 -->
+                    <button onclick="toggleCategory('城市漂流')" id="chip-城市漂流" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 transition text-sm font-medium">
+                        <span class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-outdoorCalm shadow-[0_0_8dp_#10B981]"></span>
+                            <span>城市漂流</span>
+                        </span>
+                        <i data-lucide="check" class="w-4 h-4 check-icon opacity-0 text-outdoorCalm transition"></i>
+                    </button>
+
+                    <!-- Amber / 肉身出逃 -->
+                    <button onclick="toggleCategory('肉身出逃')" id="chip-肉身出逃" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 transition text-sm font-medium">
+                        <span class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-outdoorActive shadow-[0_0_8dp_#F59E0B]"></span>
+                            <span>肉身出逃</span>
+                        </span>
+                        <i data-lucide="check" class="w-4 h-4 check-icon opacity-0 text-outdoorActive transition"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Secondary Attribute Constraints -->
+            <div class="bg-cosmicSurface/40 border border-slate-800/80 rounded-2xl p-5 shadow-xl backdrop-blur-sm space-y-4">
+                <h2 class="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-1 flex items-center space-x-2">
+                    <i data-lucide="sliders-horizontal" class="w-4 h-4 text-primaryTeal"></i>
+                    <span>高级筛选</span>
+                </h2>
+                
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1.5">费用限制</label>
+                    <div class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs text-center font-semibold">
+                        <button onclick="setFilterCost('全部')" id="btn-cost-全部" class="py-1 px-2 rounded-md transition duration-200">全部</button>
+                        <button onclick="setFilterCost('免费')" id="btn-cost-免费" class="py-1 px-2 rounded-md transition duration-200">免费</button>
+                        <button onclick="setFilterCost('付费')" id="btn-cost-付费" class="py-1 px-2 rounded-md transition duration-200">付费</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1.5">社交形式</label>
+                    <div class="grid grid-cols-4 gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs text-center font-semibold">
+                        <button onclick="setFilterSocial('全部')" id="btn-social-全部" class="py-0.5 px-0.8 rounded-md transition duration-200 truncate">全部</button>
+                        <button onclick="setFilterSocial('Solo')" id="btn-social-Solo" class="py-0.5 px-0.8 rounded-md transition duration-200 truncate">单人</button>
+                        <button onclick="setFilterSocial('Solo/Friends')" id="btn-social-SoloFriends" class="py-0.5 px-0.8 rounded-md transition duration-200 truncate">混合</button>
+                        <button onclick="setFilterSocial('Friends')" id="btn-social-Friends" class="py-0.5 px-0.8 rounded-md transition duration-200 truncate">群嗨</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Center Panel: The Physics Roulette Wheel Core -->
+        <section class="lg:col-span-5 flex flex-col items-center justify-center space-y-6">
+            
+            <!-- Beautiful mechanical pointer & wheel frame container -->
+            <div class="relative w-full aspect-square max-w-[420px] bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 shadow-2xl flex items-center justify-center select-none">
+                
+                <!-- Glowing center aura elements -->
+                <div class="absolute inset-0 bg-teal-500/5 rounded-3xl blur-2xl"></div>
+
+                <!-- Custom deflection spinner container -->
+                <div class="relative w-full h-full flex items-center justify-center">
+                    
+                    <!-- Mechanical indicator at exact top (deflects left/right dynamically) -->
+                    <div id="pointer-wrapper" class="absolute top-[-10px] left-1/2 -translate-x-1/2 z-30 transition-transform duration-75 origin-top">
+                        <svg class="w-10 h-10 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 21L4 9H20L12 21Z" fill="#E2E8F0" stroke="#000" stroke-width="1"/>
+                            <path d="M12 21L8 12H16L12 21Z" fill="#06B6D4"/>
+                            <circle cx="12" cy="7" r="3" fill="#FFF" stroke="#0F172A" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+
+                    <!-- Canvas element where the Wheel will render -->
+                    <canvas id="roulette-canvas" class="w-full h-full rounded-full border-4 border-slate-800 drop-shadow-2xl bg-cosmicDark z-10 cursor-pointer"></canvas>
+                    
+                    <!-- Beautiful modern center pin acting as Spin button -->
+                    <div onclick="spinWheel()" class="absolute inset-0 m-auto w-24 h-24 rounded-full bg-slate-900 border-4 border-slate-800 shadow-[0_4dp_20dp_rgba(0,0,0,0.6)] flex flex-col items-center justify-center z-20 cursor-pointer hover:border-teal-500 active:scale-95 transition group duration-300">
+                        <div class="absolute inset-2 rounded-full border border-slate-700/60 bg-gradient-to-tr from-slate-950 to-slate-800 group-hover:from-teal-950 group-hover:to-slate-900 transition flex flex-col items-center justify-center shadow-inner">
+                            <i data-lucide="play" class="w-6 h-6 text-primaryTeal fill-primaryTeal/20 group-hover:scale-110 group-hover:text-cyan-400 group-hover:fill-cyan-400/20 transition duration-300"></i>
+                            <span class="text-[10px] font-extrabold tracking-widest text-slate-300 uppercase mt-1">SPIN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Selection/Landed item Box -->
+            <div class="w-full max-w-[420px] bg-cosmicSurface/30 border border-slate-800 p-4 rounded-xl text-center jetbrains relative overflow-hidden backdrop-blur-md">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-primaryTeal" id="status-glow"></div>
+                <p id="wheel-instruction" class="text-xs text-slate-400">点击轮盘中心，开启能量漫游！</p>
+                <div id="quick-result" class="hidden mt-1 text-base font-bold text-white flex items-center justify-center space-x-2">
+                    <span id="quick-result-title"></span>
+                    <button id="quick-result-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-teal-400 px-2.5 py-1 rounded border border-slate-700 hover:border-slate-600">
+                        查看详情
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Panel: Grid View of Matched Activities -->
+        <section class="lg:col-span-4 flex flex-col space-y-6">
+            
+            <!-- Quick Add Form -->
+            <div class="bg-cosmicSurface/40 border border-slate-800/80 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
+                <button onclick="toggleAddForm()" class="w-full flex items-center justify-between text-xs font-semibold text-slate-400 tracking-wider uppercase group">
+                    <span class="flex items-center space-x-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-primaryTeal group-hover:scale-110 transition"></i>
+                        <span>添砖加瓦 (新建自嗨项)</span>
+                    </span>
+                    <i id="add-form-chevron" data-lucide="chevron-down" class="w-4 h-4 transition duration-300"></i>
+                </button>
+
+                <form id="add-activity-form" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-800/60 text-xs">
+                    <div>
+                        <input type="text" id="add-title" placeholder="活动名称 (例如: 听一首小野丽莎)" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="add-category" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none">
+                            <option value="灵感漫游">灵感漫游</option>
+                            <option value="居室整活">居室整活</option>
+                            <option value="城市漂流">城市漂流</option>
+                            <option value="肉身出逃">肉身出逃</option>
+                        </select>
+                        <select id="add-cost" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none">
+                            <option value="Free">免费 (Free)</option>
+                            <option value="$2-10">平价 ($2-10)</option>
+                            <option value="$10+">奢华 ($10+)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="add-social" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none">
+                            <option value="Solo">单人配方 (Solo)</option>
+                            <option value="Solo/Friends">混合皆宜 (Solo/Friends)</option>
+                            <option value="Friends">群嗨首选 (Friends)</option>
+                        </select>
+                        <input type="text" id="add-duration" placeholder="所需时间 (e.g. 15-30 min)" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="add-skill" placeholder="技能要求 (e.g. 专注力, 无)" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none">
+                        <input type="number" id="add-age" placeholder="最低年龄限制" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none" value="12">
+                    </div>
+
+                    <div>
+                        <textarea id="add-desc" rows="2" placeholder="给你的自嗨项一些神秘有趣的细节描述吧..." class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none resize-none" required></textarea>
+                    </div>
+
+                    <div>
+                        <input type="url" id="add-link" placeholder="参考链接 (例如 Spotify, Wikipedia 可空)" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white focus:border-teal-500/80 outline-none">
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-slate-950 font-bold rounded-lg transition duration-200">
+                        确定保存
+                    </button>
+                </form>
+            </div>
+
+            <!-- Matched List Bento Card -->
+            <div class="bg-cosmicSurface/40 border border-slate-800/80 rounded-2xl p-5 shadow-xl flex-grow flex flex-col min-h-[300px] max-h-[480px]">
+                <div class="flex items-center justify-between mb-3 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                    <span class="flex items-center space-x-2">
+                        <i data-lucide="text-quote" class="w-4 h-4 text-primaryTeal"></i>
+                        <span>已装载的自嗨单单</span>
+                    </span>
+                    <span id="list-count" class="jetbrains px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">0</span>
+                </div>
+
+                <!-- Live Search -->
+                <div class="mb-3 relative">
+                    <input type="text" id="search-bar" oninput="renderActivityList()" placeholder="搜索装载项标题..." class="w-full pl-9 pr-3 py-1.8 bg-slate-900/60 border border-slate-800/80 text-xs rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-slate-700">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                </div>
+
+                <!-- Scrollable activity list -->
+                <div id="activity-inner-list" class="flex-grow overflow-y-auto space-y-2 pr-1">
+                    <!-- Activities will be rendered via JS -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Detailed Modal / Floating Result Card -->
+    <div id="detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div onclick="closeDetailModal()" class="absolute inset-0 bg-cosmicDark/80 backdrop-blur-sm"></div>
+
+        <!-- Card Container -->
+        <div class="relative bg-cosmicSurface border-2 border-primaryTeal/30 rounded-2xl max-w-md w-full p-6 shadow-2xl z-10 overflow-hidden transform scale-95 transition-all duration-300">
+            <!-- Top visual pill representing category color -->
+            <div id="modal-accent-line" class="absolute top-0 left-0 w-full h-1.5 bg-indoorCalm"></div>
+            
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <span id="modal-category" class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full text-white bg-indoorCalm/35 tracking-wider">灵感漫游</span>
+                    <h3 id="modal-title" class="text-xl font-extrabold text-white tracking-tight mt-2">Build a 3AM Playlist</h3>
+                </div>
+                <button onclick="closeDetailModal()" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <p id="modal-desc" class="text-sm text-slate-300 leading-relaxed bg-slate-900/40 p-3.5 rounded-xl border border-slate-800/45">
+                    Make a playlist that feels like staring out a rainy window at 3AM.
+                </p>
+
+                <!-- Activity details table -->
+                <div class="grid grid-cols-2 gap-3 jetbrains text-xs">
+                    <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-800/60">
+                        <span class="text-slate-500 block text-[10px] mb-0.5">时间开销</span>
+                        <span id="modal-duration" class="font-bold text-slate-200">-</span>
+                    </div>
+                    <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-800/60">
+                        <span class="text-slate-500 block text-[10px] mb-0.5">费用价格</span>
+                        <span id="modal-cost" class="font-bold text-slate-200">-</span>
+                    </div>
+                    <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-800/60">
+                        <span class="text-slate-500 block text-[10px] mb-0.5">社交搭配</span>
+                        <span id="modal-social" class="font-bold text-slate-200">-</span>
+                    </div>
+                    <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-800/60">
+                        <span class="text-slate-500 block text-[10px] mb-0.5">技能要求</span>
+                        <span id="modal-skill" class="font-bold text-slate-200">无</span>
+                    </div>
+                </div>
+
+                <!-- Open Action Links & share buttons -->
+                <div class="flex items-center space-x-2 pt-2">
+                    <a id="modal-link-btn" href="#" target="_blank" class="flex-grow py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-slate-950 font-bold text-xs rounded-xl transition duration-200 text-center flex items-center justify-center space-x-1.5 shadow-lg shadow-teal-500/10">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        <span>直接去整活儿</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Web Footer -->
+    <footer class="mt-auto border-t border-slate-800 bg-slate-950 px-4 py-4 text-center text-xs text-slate-500 font-semibold jetbrains">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>&copy; 2026 VibeSettle Inc. Open Source.</div>
+            <div class="flex items-center space-x-2">
+                <span>Made with</span>
+                <i data-lucide="heart" class="w-3.5 h-3.5 text-pink-500 fill-pink-500/20"></i>
+                <span>& matching the native Android App assets</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logic Script & Physics Wheel Engine -->
+    <script>
+        // Preset default database activities seeded exactly matching Room
+        const PRESET_SEEDS = [
+            // 灵感漫游
+            { title: "Build a 3AM Playlist", category: "灵感漫游", duration: "15-40 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Make a playlist that feels like staring out a rainy window at 3AM.", link: "https://open.spotify.com/", tags: "music,aesthetic,creative", skill: "无", minAge: 12 },
+            { title: "GeoGuessr Quick Match", category: "灵感漫游", duration: "5-15 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Play one fast GeoGuessr round and see if you are secretly cracked at geography.", link: "https://www.geoguessr.com/", tags: "game,quick,geography", skill: "观察力", minAge: 12 },
+            { title: "Pinterest Identity Crisis", category: "灵感漫游", duration: "15-30 min", cost: "Free", social: "Solo", energyLevel: "Low", description: "Create a board for the person you wish you were.", link: "https://www.pinterest.com/", tags: "aesthetic,internet,creative", skill: "审美", minAge: 12 },
+            { title: "Wikipedia Speedrun", category: "灵感漫游", duration: "10-20 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Get from one random Wikipedia page to another in under 10 clicks.", link: "https://www.wikipedia.org/", tags: "internet,challenge,rabbit-hole", skill: "联想能力", minAge: 12 },
+            { title: "Rednote Deep Dive", category: "灵感漫游", duration: "10-25 min", cost: "Free", social: "Solo", energyLevel: "Low", description: "Search a random niche hobby on 小红书 and fall into the rabbit hole.", link: "https://www.xiaohongshu.com/", tags: "internet,trend,rabbit-hole", skill: "探索", minAge: 12 },
+            { title: "Make a Horrendous Meme", category: "灵感漫游", duration: "5-20 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Create the dumbest meme possible using your camera roll.", link: "", tags: "funny,creative,social", skill: "幽默感", minAge: 12 },
+            { title: "Midnight Maps GPS", category: "灵感漫游", duration: "15-30 min", cost: "Free", social: "Solo", energyLevel: "Low", description: "Drop a random pin on Google Maps in rural Iceland/Japan and discover 3 cozy-looking houses/shops.", link: "https://maps.google.com/", tags: "internet,cozy,exploration", skill: "想象力", minAge: 12 },
+            { title: "Vaporwave Design", category: "灵感漫游", duration: "20-40 min", cost: "Free", social: "Solo", energyLevel: "Low", description: "Create a surreal, overly saturated retro cyberpunk image using free online editors with text in a foreign language.", link: "https://www.canva.com", tags: "creative,aesthetic,design", skill: "审美力", minAge: 12 },
+            
+            // 居室整活
+            { title: "Pushups Every Death", category: "居室整活", duration: "10-30 min", cost: "Free", social: "Solo/Friends", energyLevel: "High", description: "Every death in-game equals 10 pushups.", link: "", tags: "gaming,fitness,challenge", skill: "意志力", minAge: 16 },
+            { title: "Boss Fight Workout", category: "居室整活", duration: "15-40 min", cost: "Free", social: "Solo", energyLevel: "High", description: "Exercise while anime OST plays dramatically in the background.", link: "https://www.youtube.com/", tags: "anime,fitness,dopamine", skill: "体能", minAge: 12 },
+            { title: "Speedrun Shower", category: "居室整活", duration: "5-10 min", cost: "Free", social: "Solo", energyLevel: "Medium", description: "Finish your shower before the current song ends.", link: "", tags: "challenge,funny,quick", skill: "敏捷性", minAge: 8 },
+            { title: "Mirror NPC Dialogue", category: "居室整活", duration: "5-15 min", cost: "Free", social: "Solo/Friends", energyLevel: "Medium", description: "Practice absurd NPC dialogue in front of the mirror.", link: "", tags: "chaotic,funny,acting", skill: "演绎", minAge: 6 },
+            { title: "Floor Is Lava", category: "居室整活", duration: "5-15 min", cost: "Free", social: "Solo/Friends", energyLevel: "Medium", description: "Navigate your room without touching the floor.", link: "", tags: "challenge,fun,chaotic", skill: "平衡力", minAge: 6 },
+            { title: "Reaction Time Duel", category: "居室整活", duration: "5-20 min", cost: "Free", social: "Solo/Friends", energyLevel: "Medium", description: "Compete for the fastest Human Benchmark reaction score.", link: "https://humanbenchmark.com/tests/reactiontime", tags: "competitive,gaming,quick", skill: "反应力", minAge: 8 },
+            { title: "Muted Kung-Fu Shadows", category: "居室整活", duration: "10-20 min", cost: "Free", social: "Solo", energyLevel: "Medium", description: "Shadowbox or dance to an anime/movie combat sequence while wearing soft socks to make zero landing sound.", link: "", tags: "funny,fitness,sneaky", skill: "敏捷度", minAge: 12 },
+            { title: "Pencil Balance Tower", category: "居室整活", duration: "10-30 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Construct a structurally complex tower using nothing but pencils, kitchen cutlery, and gravity on your desk.", link: "", tags: "challenge,focus,indoor", skill: "耐心与微操", minAge: 8 },
+
+            // 城市漂流
+            { title: "Color Walk", category: "城市漂流", duration: "15-40 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Pick a color and photograph 5 things matching it outside.", link: "", tags: "photography,citywalk,trend", skill: "摄影", minAge: 8 },
+            { title: "Convenience Store Roulette", category: "城市漂流", duration: "10-25 min", cost: "$2-10", social: "Solo/Friends", energyLevel: "Low", description: "Buy the snack with the weirdest packaging.", link: "", tags: "food,funny,exploration", skill: "探索精神", minAge: 6 },
+            { title: "Fake Tourist Mode", category: "城市漂流", duration: "30-90 min", cost: "$0-10", social: "Solo/Friends", energyLevel: "Low", description: "Go somewhere nearby you have never actually explored before.", link: "", tags: "citywalk,exploration,adventure", skill: "好奇心", minAge: 6 },
+            { title: "Photodump Hunt", category: "城市漂流", duration: "20-45 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Take 10 photos that feel like an album cover.", link: "", tags: "photography,aesthetic,creative", skill: "审美", minAge: 8 },
+            { title: "Find a Tiny Cafe", category: "城市漂流", duration: "20-60 min", cost: "$5-15", social: "Solo/Friends", energyLevel: "Low", description: "Walk until you discover a cafe you have never noticed before.", link: "", tags: "cafe,explore,citywalk", skill: "发现美", minAge: 12 },
+            { title: "Silent Walk", category: "城市漂流", duration: "15-30 min", cost: "Free", social: "Solo", energyLevel: "Low", description: "Walk outside for 15 minutes without touching your phone.", link: "", tags: "mindfulness,healing,outside", skill: "专注力", minAge: 8 },
+            { title: "100-Step Cinema", category: "城市漂流", duration: "15-30 min", cost: "Free", social: "Solo", energyLevel: "Low", description: "Walk 100 paces observing passersby, translating their movements and expressions/gestures into silent cinema plot subtitles inside your head.", link: "", tags: "mindfulness,imaginary,humor", skill: "观察力", minAge: 10 },
+            { title: "Urban Brand Font Hunt", category: "城市漂流", duration: "30-50 min", cost: "Free", social: "Solo/Friends", energyLevel: "Low", description: "Photograph 5 bizarre shop typography styles, misspelled English signs, or hand-painted old alleyway calligraphy notices.", link: "", tags: "photography,aesthetic,exploration", skill: "艺术审美", minAge: 12 },
+
+            // 肉身出逃
+            { title: "Pokemon GO Walk", category: "肉身出逃", duration: "20-60 min", cost: "Free", social: "Solo/Friends", energyLevel: "Medium", description: "Gamify touching grass.", link: "https://pokemongolive.com/", tags: "walking,game,outside", skill: "耐力", minAge: 8 },
+            { title: "Last 10 Second Sprint", category: "肉身出逃", duration: "5-15 min", cost: "Free", social: "Solo", energyLevel: "High", description: "Sprint before the crossing timer hits zero.", link: "", tags: "running,chaotic,quick", skill: "爆发力", minAge: 12 },
+            { title: "Random Destination Run", category: "肉身出逃", duration: "15-40 min", cost: "Free", social: "Solo/Friends", energyLevel: "High", description: "Pick a random nearby landmark and race there.", link: "", tags: "running,challenge,adventure", skill: "定向运动", minAge: 12 },
+            { title: "Staircase Boss Battle", category: "肉身出逃", duration: "10-25 min", cost: "Free", social: "Solo/Friends", energyLevel: "High", description: "Run stairs until your legs enter survival mode.", link: "", tags: "fitness,challenge,cardio", skill: "心肺代偿", minAge: 14 },
+            { title: "Bike Without GPS", category: "肉身出逃", duration: "45-120 min", cost: "Free", social: "Solo/Friends", energyLevel: "High", description: "Cycle somewhere new without opening maps.", link: "", tags: "cycling,exploration,adventure", skill: "空间位置感", minAge: 14 },
+            { title: "Catch Sunset", category: "肉身出逃", duration: "15-45 min", cost: "Free", social: "Solo/Friends", energyLevel: "Medium", description: "Rush outside and find the best sunset spot possible.", link: "", tags: "sunset,aesthetic,outside", skill: "追光", minAge: 6 },
+            { title: "Shadow Sidewalk Escape", category: "肉身出逃", duration: "10-25 min", cost: "Free", social: "Solo/Friends", energyLevel: "Medium", description: "Walk alongside street sidewalks while stepping exclusively inside building shadows. Lose a 'life' if you touch direct sunlight!", link: "", tags: "challenge,outside,childhood", skill: "平衡力与反应", minAge: 8 }
+        ];
+
+        // State Machine
+        let activities = [];
+        let favorites = [];
+        let selectedCategories = new Set(["灵感漫游", "居室整活", "城市漂流", "肉身出逃"]);
+        let filterCost = "全部";
+        let filterSocial = "全部";
+        
+        // Physics and animation
+        let wheelAngle = 0;          // Accumulated degrees of the wheel
+        let targetAngle = 0;         // Goal angle
+        let isSpinning = false;      // Spin state flag
+        let animationFrameId = null; // Animation handle
+        let activeWheelItems = [];   // Matches fed directly into the wheel
+
+        // Canvas element setup
+        const canvas = document.getElementById("roulette-canvas");
+        const ctx = canvas.getContext("2d");
+        let dpr = window.devicePixelRatio || 1;
+
+        // Size configuration & Responsive Drawing support
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.width * dpr; // Keep square
+            ctx.scale(dpr, dpr);
+            drawWheel();
+        }
+
+        // Initialize Local Storage
+        function initData() {
+            const storedActions = localStorage.getItem("vibesettle_actions_v1");
+            if (storedActions) {
+                activities = JSON.parse(storedActions);
+            } else {
+                activities = [...PRESET_SEEDS];
+                localStorage.setItem("vibesettle_actions_v1", JSON.stringify(activities));
+            }
+
+            const storedFavs = localStorage.getItem("vibesettle_favorites_v1");
+            if (storedFavs) {
+                favorites = JSON.parse(storedFavs);
+            } else {
+                favorites = [];
+                localStorage.setItem("vibesettle_favorites_v1", JSON.stringify(favorites));
+            }
+            
+            updateStatsAndUI();
+        }
+
+        function resetToDefaultSeeds() {
+            if (confirm("确定要重置所有内置自嗨项和用户自定义项吗？")) {
+                localStorage.removeItem("vibesettle_actions_v1");
+                localStorage.removeItem("vibesettle_favorites_v1");
+                initData();
+            }
+        }
+
+        // Add form animation toggle
+        function toggleAddForm() {
+            const form = document.getElementById("add-activity-form");
+            const chevron = document.getElementById("add-form-chevron");
+            if (form.classList.contains("hidden")) {
+                form.classList.remove("hidden");
+                chevron.style.transform = "rotate(180deg)";
+            } else {
+                form.classList.add("hidden");
+                chevron.style.transform = "rotate(0deg)";
+            }
+        }
+
+        // Filter operations & togglers (Supports Multi-Selection)
+        function toggleCategory(cat) {
+            if (isSpinning) return;
+            
+            if (cat === "全部") {
+                selectedCategories = new Set(["灵感漫游", "居室整活", "城市漂流", "肉身出逃"]);
+            } else {
+                if (selectedCategories.has(cat)) {
+                    if (selectedCategories.size > 1) { // Prevent empty set to avoid layout breaks on wheel
+                        selectedCategories.delete(cat);
+                    }
+                } else {
+                    selectedCategories.add(cat);
+                }
+            }
+            updateStatsAndUI();
+        }
+
+        function setFilterCost(cost) {
+            if (isSpinning) return;
+            filterCost = cost;
+            updateStatsAndUI();
+        }
+
+        function setFilterSocial(soc) {
+            if (isSpinning) return;
+            filterSocial = soc;
+            updateStatsAndUI();
+        }
+
+        // Toggle bookmarks/favorites
+        function toggleFav(title) {
+            const idx = favorites.indexOf(title);
+            if (idx === -1) {
+                favorites.push(title);
+            } else {
+                favorites.splice(idx, 1);
+            }
+            localStorage.setItem("vibesettle_favorites_v1", JSON.stringify(favorites));
+            updateStatsAndUI();
+        }
+
+        // Handle addition form submissions
+        document.getElementById("add-activity-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const action = {
+                title: document.getElementById("add-title").value,
+                category: document.getElementById("add-category").value,
+                cost: document.getElementById("add-cost").value,
+                social: document.getElementById("add-social").value,
+                duration: document.getElementById("add-duration").value,
+                skill: document.getElementById("add-skill").value || "无",
+                minAge: parseInt(document.getElementById("add-age").value) || 12,
+                description: document.getElementById("add-desc").value,
+                link: document.getElementById("add-link").value || "",
+                tags: "custom"
+            };
+
+            activities.unshift(action);
+            localStorage.setItem("vibesettle_actions_v1", JSON.stringify(activities));
+            this.reset();
+            toggleAddForm();
+            updateStatsAndUI();
+        });
+
+        // Filter matcher
+        function matchesFilters(it) {
+            const catMatch = selectedCategories.has(it.category);
+            
+            let costMatch = true;
+            if (filterCost === "免费") {
+                costMatch = it.cost.toLowerCase() === "free" || it.cost === "0";
+            } else if (filterCost === "付费") {
+                costMatch = it.cost.toLowerCase() !== "free" && it.cost !== "0";
+            }
+
+            let socialMatch = true;
+            if (filterSocial === "Solo") {
+                socialMatch = it.social === "Solo";
+            } else if (filterSocial === "Solo/Friends") {
+                socialMatch = it.social === "Solo/Friends";
+            } else if (filterSocial === "Friends") {
+                socialMatch = it.social === "Friends";
+            }
+
+            return catMatch && costMatch && socialMatch;
+        }
+
+        // Interleave categories to mix items beautifully on the canvas
+        function interleaveCategories(list) {
+            const groups = {};
+            list.forEach(item => {
+                if (!groups[item.category]) groups[item.category] = [];
+                groups[item.category].push(item);
+            });
+            const values = Object.values(groups);
+            const result = [];
+            let remaining = true;
+            let index = 0;
+            while (remaining) {
+                remaining = false;
+                for (let i = 0; i < values.length; i++) {
+                    const group = values[i];
+                    if (index < group.length) {
+                        result.push(group[index]);
+                        remaining = true;
+                    }
+                }
+                index++;
+            }
+            return result;
+        }
+
+        function getCategoryColor(category) {
+            switch(category) {
+                case "灵感漫游": return "#EC4899"; // Pink
+                case "居室整活": return "#06B6D4"; // Cyan
+                case "城市漂流": return "#10B981"; // Emerald
+                case "肉身出逃": return "#F59E0B"; // Amber
+                default: return "#475569";
+            }
+        }
+
+        // Math updates, render pipelines, and calculations
+        function updateStatsAndUI() {
+            // Update chip styling
+            const cats = ["灵感漫游", "居室整活", "城市漂流", "肉身出逃"];
+            const isAllSelected = selectedCategories.size === 4;
+            
+            const btnAll = document.getElementById("chip-全部");
+            const checkAll = btnAll.querySelector("i");
+            if (isAllSelected) {
+                btnAll.className = "w-full flex items-center justify-between p-3 rounded-xl border transition text-sm font-medium bg-slate-800 border-teal-500 text-teal-400";
+                checkAll.classList.remove("opacity-0");
+            } else {
+                btnAll.className = "w-full flex items-center justify-between p-3 rounded-xl border transition text-sm font-medium bg-slate-900 border-slate-800 hover:border-slate-700 text-slate-400";
+                checkAll.classList.add("opacity-0");
+            }
+
+            cats.forEach(cat => {
+                const btn = document.getElementById(`chip-${cat}`);
+                const check = btn.querySelector(".check-icon");
+                const color = getCategoryColor(cat);
+                const isActive = selectedCategories.has(cat);
+
+                if (isActive) {
+                    btn.style.borderColor = color + "60";
+                    btn.style.backgroundColor = color + "15";
+                    btn.classList.add("text-slate-100");
+                    btn.classList.remove("text-slate-400");
+                    check.classList.remove("opacity-0");
+                } else {
+                    btn.style.borderColor = "";
+                    btn.style.backgroundColor = "";
+                    btn.classList.add("text-slate-400");
+                    btn.classList.remove("text-slate-100");
+                    check.classList.add("opacity-0");
+                }
+            });
+
+            // Update Cost Segmented state buttons
+            const costs = ["全部", "免费", "付费"];
+            costs.forEach(c => {
+                const b = document.getElementById(`btn-cost-${c}`);
+                if (filterCost === c) {
+                    b.className = "py-1 px-2 rounded-md transition duration-200 bg-teal-500 text-slate-950 font-bold shadow-md shadow-teal-500/20";
+                } else {
+                    b.className = "py-1 px-2 rounded-md transition duration-200 text-slate-400 hover:text-white hover:bg-slate-800";
+                }
+            });
+
+            // Update Social Segmented state buttons
+            const socials = ["全部", "Solo", "Solo/Friends", "Friends"];
+            socials.forEach(s => {
+                const label = s === "Solo/Friends" ? "SoloFriends" : s;
+                const b = document.getElementById(`btn-social-${label}`);
+                if (filterSocial === s) {
+                    b.className = "py-0.5 px-0.8 rounded-md transition duration-200 bg-teal-500 text-slate-950 font-bold shadow-md shadow-teal-500/20 truncate";
+                } else {
+                    b.className = "py-0.5 px-0.8 rounded-md transition duration-200 text-slate-400 hover:text-white hover:bg-slate-800 truncate";
+                }
+            });
+
+            // Re-evaluate matching list
+            const matchedList = activities.filter(matchesFilters);
+            document.getElementById("active-count").innerText = matchedList.length;
+            document.getElementById("favs-count").innerText = favorites.length;
+            document.getElementById("list-count").innerText = matchedList.length;
+
+            // Generate beautifully mixed active lists for roulette canvas feeds
+            activeWheelItems = interleaveCategories(matchedList);
+            
+            drawWheel();
+            renderActivityList();
+            lucide.createIcons();
+        }
+
+        // Render HTML Matched Bento List
+        function renderActivityList() {
+            const query = document.getElementById("search-bar").value.toLowerCase();
+            const container = document.getElementById("activity-inner-list");
+            container.innerHTML = "";
+
+            const matchedList = activities.filter(it => matchesFilters(it) && it.title.toLowerCase().includes(query));
+
+            if (matchedList.length === 0) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center p-8 text-center text-slate-500 text-xs">
+                        <i data-lucide="package-open" class="w-8 h-8 opacity-40 mb-2"></i>
+                        <span>空空如也，尝试切换筛选条件</span>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            matchedList.forEach(it => {
+                const color = getCategoryColor(it.category);
+                const isFav = favorites.includes(it.title);
+
+                const div = document.createElement("div");
+                div.className = "p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl hover:border-slate-700 hover:bg-slate-900 transition flex items-center justify-between text-xs duration-200 relative overflow-hidden group";
+                div.style.borderLeft = `3.5px solid ${color}`;
+
+                div.innerHTML = `
+                    <div onclick="showDetail(${JSON.stringify(it).replace(/"/g, '&quot;')})" class="flex-grow pr-3 cursor-pointer">
+                        <div class="flex items-center space-x-1 mb-1">
+                            <span class="text-[9px] px-1.5 py-0.2 rounded-full font-bold uppercase tracking-wider text-xs" style="color: ${color}; background-color: ${color}15">${it.category}</span>
+                            <span class="text-slate-500 text-[10px] jetbrains">${it.duration}</span>
+                        </div>
+                        <h4 class="font-extrabold text-white text-sm group-hover:text-teal-400 transition">${it.title}</h4>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <button onclick="toggleFav('${it.title.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg border border-slate-800 bg-slate-950/40 hover:bg-slate-800 transition">
+                            <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'text-pink-500 fill-pink-500' : 'text-slate-500 hover:text-pink-400'}"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Custom canvas draw implementation echoing Compose paint loops
+        function drawWheel() {
+            const rect = canvas.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+            const radius = width / 2;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (activeWheelItems.length === 0) {
+                // Draw decorative empty slate circle
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.beginPath();
+                ctx.arc(0, 0, radius - 15, 0, 2 * Math.PI);
+                ctx.fillStyle = "#111827";
+                ctx.fill();
+                ctx.strokeStyle = "#1F2937";
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                ctx.fillStyle = "#9CA3AF";
+                ctx.font = "bold 13px Plus Jakarta Sans";
+                ctx.textAlign = "center";
+                ctx.fillText("无装载自嗨项", 0, 5);
+                ctx.restore();
+                return;
+            }
+
+            const totalSlices = activeWheelItems.length;
+            const sliceAngle = (360 / totalSlices) * Math.PI / 180;
+
+            ctx.save();
+            ctx.translate(radius, radius);
+            ctx.rotate(wheelAngle * Math.PI / 180);
+
+            for (let i = 0; i < totalSlices; i++) {
+                const item = activeWheelItems[i];
+                const startAngle = i * sliceAngle;
+                const endAngle = startAngle + sliceAngle;
+                const color = getCategoryColor(item.category);
+
+                // Draw Slice Arc Background
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius - 5, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = color + "22"; // 13% opacity wash
+                ctx.fill();
+
+                // Draw solid outer accent band rim
+                ctx.beginPath();
+                ctx.arc(0, 0, radius - 5, startAngle, endAngle);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Draw divide lines
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                const lex = (radius - 5) * Math.cos(startAngle);
+                const ley = (radius - 5) * Math.sin(startAngle);
+                ctx.lineTo(lex, ley);
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Render Labels (Radial Text)
+                ctx.save();
+                const midAngle = startAngle + sliceAngle / 2;
+                ctx.rotate(midAngle);
+
+                // Dynamically adjust font size to replicate Compose text break lines precisely
+                let fontSize = totalSlices > 12 ? radius * 0.065 : totalSlices > 8 ? radius * 0.075 : totalSlices > 5 ? radius * 0.09 : radius * 0.105;
+                ctx.fillStyle = "#FFFFFF";
+                ctx.font = `bold ${fontSize}px Plus Jakarta Sans`;
+                ctx.textAlign = "left";
+                ctx.textBaseline = "middle";
+
+                // Starting coordinates for text
+                const textStartX = radius * 0.28;
+                const maxAllowedWidth = (radius * 0.88) - textStartX;
+
+                // Truncate cleanly following system Paint loops
+                let displayTitle = item.title;
+                const metrics = ctx.measureText(displayTitle);
+                if (metrics.width > maxAllowedWidth) {
+                    let textLen = displayTitle.length;
+                    while (textLen > 0 && ctx.measureText(displayTitle.slice(0, textLen) + "…").width > maxAllowedWidth) {
+                        textLen--;
+                    }
+                    displayTitle = displayTitle.slice(0, textLen) + "…";
+                }
+
+                // Draw the text
+                ctx.fillText(displayTitle, textStartX, 0);
+                ctx.restore();
+            }
+
+            // Draw center boundary circle aesthetic overlay
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.25, 0, 2 * Math.PI);
+            ctx.fillStyle = "#0B0F19";
+            ctx.fill();
+            ctx.strokeStyle = "#1E293B";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Spin Engine with mechanical click physics
+        let currentVelocity = 0;
+        let lastTickedSlice = -1;
+
+        function spinWheel() {
+            if (isSpinning || activeWheelItems.length === 0) return;
+            
+            isSpinning = true;
+            document.getElementById("wheel-instruction").innerText = "自嗨能量超频中，正在锁定...";
+            document.getElementById("quick-result").classList.add("hidden");
+            
+            // Random targets spanning multiple loops
+            const randomExtraDeg = Math.random() * 360;
+            const targetSpins = 4 + Math.random() * 3; // 4 to 7 full circles
+            const angleDelta = targetSpins * 360 + randomExtraDeg;
+            
+            targetAngle = wheelAngle + angleDelta;
+            let currentAngle = wheelAngle;
+            
+            const duration = 4200; // 4.2 seconds
+            const startTimestamp = performance.now();
+
+            function animate(timestamp) {
+                const elapsed = timestamp - startTimestamp;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Cubic deceleration curve matching Android physical deceleration perfectly
+                const slowdown = 1 - Math.pow(1 - progress, 3);
+                
+                wheelAngle = currentAngle + (targetAngle - currentAngle) * slowdown;
+                
+                // Track mechanical ticking deflection
+                const totalSlices = activeWheelItems.length;
+                const sliceDegrees = 360 / totalSlices;
+                
+                // Adjust for alignment offset: top indicator is at degrees = -90 (or 270)
+                // Normalize wheelAngle between 0 and 360, detect crossing of slices
+                const currentPointerSliceOffset = Math.floor((-wheelAngle - 90) / sliceDegrees);
+                
+                if (currentPointerSliceOffset !== lastTickedSlice) {
+                    lastTickedSlice = currentPointerSliceOffset;
+                    triggerMechanicalTick();
+                }
+
+                drawWheel();
+
+                if (progress < 1) {
+                    animationFrameId = requestAnimationFrame(animate);
+                } else {
+                    isSpinning = false;
+                    
+                    // Normalize final landing angle
+                    wheelAngle = wheelAngle % 360;
+                    if (wheelAngle < 0) wheelAngle += 360;
+                    
+                    // Locate exact pointer target slice (270 degrees is top vector on standard polar coordinates)
+                    const normalizedOffset = (270 - wheelAngle) % 360;
+                    const finalOffsetNormalized = normalizedOffset < 0 ? normalizedOffset + 360 : normalizedOffset;
+                    
+                    const slicePercentage = finalOffsetNormalized / 360;
+                    const landedIndex = Math.floor(slicePercentage * totalSlices);
+                    
+                    // Safety check on arrays
+                    const landedItem = activeWheelItems[landedIndex % totalSlices];
+                    
+                    // Show result Dialog
+                    displayResult(landedItem);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        // Mechanical physical tick deflection animation
+        function triggerMechanicalTick() {
+            const pointer = document.getElementById("pointer-wrapper");
+            // Perform rapid deflection back and forth
+            pointer.style.transform = "translateX(-50%) rotate(-15deg)";
+            
+            setTimeout(() => {
+                pointer.style.transform = "translateX(-50%) rotate(0deg)";
+            }, 80);
+
+            // Auditory placeholder or quiet WebAudio API tick
+            playTickSound();
+        }
+
+        let audioContext = null;
+        function playTickSound() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(450, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(10, audioContext.currentTime + 0.05);
+
+                gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.06);
+            } catch (e) {
+                // Ignore silent failure if browser policy blocks instant execution
+            }
+        }
+
+        // Show Lander result cards
+        function displayResult(item) {
+            document.getElementById("wheel-instruction").innerText = `🎯 选中自嗨项:`;
+            
+            const targetColor = getCategoryColor(item.category);
+            const statusGlow = document.getElementById("status-glow");
+            statusGlow.style.backgroundColor = targetColor;
+
+            const qResult = document.getElementById("quick-result");
+            const qTitle = document.getElementById("quick-result-title");
+            const qBtn = document.getElementById("quick-result-btn");
+            
+            qTitle.innerText = item.title;
+            qResult.classList.remove("hidden");
+            
+            qBtn.onclick = () => showDetail(item);
+            
+            // Auto open the detailed screen
+            setTimeout(() => {
+                showDetail(item);
+            }, 600);
+        }
+
+        // Modal detail displays
+        function showDetail(item) {
+            const modal = document.getElementById("detail-modal");
+            const AccentLine = document.getElementById("modal-accent-line");
+            const CatBadge = document.getElementById("modal-category");
+            const TitleText = document.getElementById("modal-title");
+            const DescText = document.getElementById("modal-desc");
+            const DurText = document.getElementById("modal-duration");
+            const CostText = document.getElementById("modal-cost");
+            const SocText = document.getElementById("modal-social");
+            const SkillText = document.getElementById("modal-skill");
+            const LinkBtn = document.getElementById("modal-link-btn");
+
+            const color = getCategoryColor(item.category);
+            
+            AccentLine.style.backgroundColor = color;
+            CatBadge.style.backgroundColor = color + "40";
+            CatBadge.style.color = color;
+            CatBadge.innerText = item.category;
+
+            TitleText.innerText = item.title;
+            DescText.innerText = item.description || "一个充满神秘感与自娱自乐气质的优雅活动。";
+            
+            DurText.innerText = item.duration || "15-30 min";
+            CostText.innerText = item.cost || "Free";
+            SocText.innerText = item.social || "Solo";
+            SkillText.innerText = item.skill || "无";
+
+            if (item.link) {
+                LinkBtn.href = item.link;
+                LinkBtn.firstElementChild.style.display = "block";
+                LinkBtn.style.display = "flex";
+            } else {
+                LinkBtn.removeAttribute("href");
+                LinkBtn.style.display = "none";
+            }
+
+            modal.classList.remove("hidden");
+            setTimeout(() => {
+                modal.querySelector(".relative").classList.remove("scale-95");
+                modal.querySelector(".relative").classList.add("scale-100");
+            }, 10);
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById("detail-modal");
+            modal.querySelector(".relative").classList.add("scale-95");
+            modal.querySelector(".relative").classList.remove("scale-100");
+            setTimeout(() => {
+                modal.classList.add("hidden");
+            }, 150);
+        }
+
+        // Listeners for window scale changes
+        window.addEventListener("resize", resizeCanvas);
+        
+        // Start app
+        document.addEventListener("DOMContentLoaded", () => {
+            initData();
+            resizeCanvas();
+        });
+    </script>
+</body>
+</html>
