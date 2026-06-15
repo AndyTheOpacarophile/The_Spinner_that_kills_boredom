@@ -1,0 +1,6 @@
+{
+  "name": "VibeSettle",
+  "description": "Decide your next perfect vibration when you are free. Roulette spinner, activity logger, statistics, and custom favorites.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
